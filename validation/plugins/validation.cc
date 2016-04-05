@@ -192,6 +192,10 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
 
+  edm::InputTag vertexName_;
+  edm::InputTag trackName_;
+  edm::InputTag pfCandName_;
+
 
   double offlineptErr_;
   double offlineDCA_;
@@ -240,9 +244,14 @@ validation::validation(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
-  trackSrc_ = consumes<reco::TrackCollection>(edm::InputTag("trackSrc"));
-  vertexSrc_ = consumes<reco::VertexCollection>(edm::InputTag("vertexSrc"));
-  pfCandSrc_ = consumes<reco::PFCandidateCollection>(edm::InputTag("pfCandSrc"));
+  
+  trackName_ = iConfig.getParameter<edm::InputTag>("trackName");
+  vertexName_ = iConfig.getParameter<edm::InputTag>("vertexName");
+  pfCandName_ = iConfig.getParameter<edm::InputTag>("pfCandName");
+
+  trackSrc_ = consumes<reco::TrackCollection>(trackName_);
+  vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
+  pfCandSrc_ = consumes<reco::PFCandidateCollection>(pfCandName_);
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
