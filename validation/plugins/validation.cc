@@ -376,26 +376,26 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         double ecalEnergy = 0.;
         double hcalEnergy = 0.;
-        for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
+        // for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
 
-          const reco::PFCandidate& cand = (*pfCandidates)[ic];
+        //   const reco::PFCandidate& cand = (*pfCandidates)[ic];
 
-          int type = cand.particleId();
+        //   int type = cand.particleId();
 
-          // only charged hadrons and leptons can be asscociated with a track
-          if(!(type == reco::PFCandidate::h ||     //type1
-          type == reco::PFCandidate::e ||     //type2
-          type == reco::PFCandidate::mu      //type3
-          )) continue;
+        //   // only charged hadrons and leptons can be asscociated with a track
+        //   if(!(type == reco::PFCandidate::h ||     //type1
+        //   type == reco::PFCandidate::e ||     //type2
+        //   type == reco::PFCandidate::mu      //type3
+        //   )) continue;
 
-          reco::TrackRef trackRef = cand.trackRef();
-          if( it == trackRef.key() ) {
-            // cand_index = ic;
-            ecalEnergy = cand.ecalEnergy();
-            hcalEnergy = cand.hcalEnergy();
-            break;
-          }
-        }
+        //   reco::TrackRef trackRef = cand.trackRef();
+        //   if( it == trackRef.key() ) {
+        //     // cand_index = ic;
+        //     ecalEnergy = cand.ecalEnergy();
+        //     hcalEnergy = cand.hcalEnergy();
+        //     break;
+        //   }
+        // }
 
         double energy = ecalEnergy+hcalEnergy;
         double pT = energy/(TMath::CosH(trk.eta()));
