@@ -323,15 +323,11 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
   }
   nVtx->Fill( num );
-      cout << "test1 " << endl;
 
   if( vtx.tracksSize() < 2 || vtx.isFake() ) return;
   vtxZ->Fill( vtx.z() );
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
-
-      cout << "test2 " << endl;
-
 
   Handle<reco::TrackCollection> tracks;
   iEvent.getByToken(trackSrc_, tracks);
@@ -340,9 +336,6 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<reco::PFCandidateCollection> pfCandidates;
   iEvent.getByToken(pfCandSrc_, pfCandidates);
   if( !pfCandidates.isValid() ) return;
-
-      cout << "test3 " << endl;
-
 
   int total = 0;
   for(unsigned it = 0; it < tracks->size(); it++){
@@ -383,44 +376,41 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         eta->Fill( trk.eta() );
         phi->Fill( trk.phi() );
 
-        // double ecalEnergy = 0.;
-        // double hcalEnergy = 0.;
-        // for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
+        double ecalEnergy = 0.;
+        double hcalEnergy = 0.;
+        for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
 
-        //   const reco::PFCandidate& cand = (*pfCandidates)[ic];
+          const reco::PFCandidate& cand = (*pfCandidates)[ic];
 
-        //   int type = cand.particleId();
+          int type = cand.particleId();
 
-        //   // only charged hadrons and leptons can be asscociated with a track
-        //   if(!(type == reco::PFCandidate::h ||     //type1
-        //   type == reco::PFCandidate::e ||     //type2
-        //   type == reco::PFCandidate::mu      //type3
-        //   )) continue;
+          // only charged hadrons and leptons can be asscociated with a track
+          if(!(type == reco::PFCandidate::h ||     //type1
+          type == reco::PFCandidate::e ||     //type2
+          type == reco::PFCandidate::mu      //type3
+          )) continue;
 
-        //   reco::TrackRef trackRef = cand.trackRef();
-        //   if( it == trackRef.key() ) {
-        //     // cand_index = ic;
-        //     ecalEnergy = cand.ecalEnergy();
-        //     hcalEnergy = cand.hcalEnergy();
-        //     break;
-        //   }
-        // }
+          reco::TrackRef trackRef = cand.trackRef();
+          if( it == trackRef.key() ) {
+            // cand_index = ic;
+            ecalEnergy = cand.ecalEnergy();
+            hcalEnergy = cand.hcalEnergy();
+            break;
+          }
+        }
 
-        // double energy = ecalEnergy+hcalEnergy;
-        // double pT = energy/(TMath::CosH(trk.eta()));
-        // double ratio = pT/trk.pt();
+        double energy = ecalEnergy+hcalEnergy;
+        double pT = energy/(TMath::CosH(trk.eta()));
+        double ratio = pT/trk.pt();
         
-        // if( !doCentrality_ ) hiBin_ = 1.0;
-        // caloVsCbin->Fill(hiBin_, ratio);
+        if( !doCentrality_ ) hiBin_ = 1.0;
+        caloVsCbin->Fill(hiBin_, ratio);
 
   }
 
 
       
   Ntrk->Fill( total );
-      cout << "test4 " << endl;
-
-
 
 }// last braket 
 // ------------ method called once each job just before starting event loop  ------------
@@ -431,6 +421,7 @@ validation::beginJob()
     
   TH3D::SetDefaultSumw2();
 
+  Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
   caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
 
