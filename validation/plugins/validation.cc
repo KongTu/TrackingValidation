@@ -190,6 +190,9 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::string vertexSrc_; // vertex collection: hiSelectedVertex
   edm::InputTag pfCandSrc_; // pfCandidate collection
 
+  edm::EDGetTokenT<reco::Centrality> centralityToken_;
+  edm::EDGetTokenT<int> centralityBinToken_;
+
   double offlineptErr_;
   double offlineDCA_;
   double offlineChi2_;
@@ -200,6 +203,21 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1D* vtxZ;
   TH1D* vtxX;
   TH1D* vtxY;
+
+  TH1D* pt;
+  TH1D* ptError;
+  TH1D* eta;
+  TH1D* phi;
+  TH1D* DCAz;
+  TH1D* DCAxy;
+  TH1D* Chi2n;
+  TH1D* numberOfHits;
+  TH1D* Algo;
+
+  TH1D* Ntrk;
+  TH1D* cBins;
+  TH2D* caloVsCbin;
+
 
 };
 
@@ -229,6 +247,9 @@ validation::validation(const edm::ParameterSet& iConfig)
   offlineChi2_ = iConfig.getUntrackedParameter<double>("offlineChi2", 0.0);
   offlinenhits_ = iConfig.getUntrackedParameter<double>("offlinenhits", 0.0);
 
+  centralityToken_ = consumes<reco::Centrality>(iConfig.getParameter<edm::InputTag>("centralitySrc"));
+  centralityBinToken_ = consumes<int>(iConfig.getParameter<edm::InputTag>("centralityBinSrc"));
+
 }
 
 
@@ -251,7 +272,18 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   using namespace std;
-  
+
+  double hiBin_ = 0.;
+  if( doCentrality_ ){
+    edm::Handle<reco::Centrality> centrality;
+    iEvent.getByToken(centralityToken_, centrality);
+    edm::Handle<int> cbin;
+    iEvent.getByToken(centralityBinToken_, cbin);
+    
+    hiBin_ = *cbin;
+    cBins->Fill( hiBin_ );
+  }
+
   edm::Handle<reco::VertexCollection> vertices;
   iEvent.getByLabel(vertexSrc_,vertices);
   double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
@@ -282,7 +314,6 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
 
-
   Handle<reco::TrackCollection> tracks;
   iEvent.getByLabel(trackSrc_, tracks);
   if( !tracks.isValid() ) return;
@@ -291,73 +322,81 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(pfCandSrc_, pfCandidates);
   if( !pfCandidates.isValid() ) return;
 
-  // for(unsigned it = 0; it < tracks->size(); it++){
+  for(unsigned it = 0; it < tracks->size(); it++){
 
-  //    const reco::Track & trk = (*tracks)[it];
+     const reco::Track & trk = (*tracks)[it];
   
-  //    math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
+     math::XYZPoint bestvtx(bestvx,bestvy,bestvz);
 
-  //       double dzvtx = trk.dz(bestvtx);
-  //       double dxyvtx = trk.dxy(bestvtx);
-  //       double dzerror = sqrt(trk.dzError()*trk.dzError()+bestvzError*bestvzError);
-  //       double dxyerror = sqrt(trk.d0Error()*trk.d0Error()+bestvxError*bestvyError); 
-  //       double nhits = trk.numberOfValidHits();
-  //       double chi2n = trk.normalizedChi2();
-  //       double nlayers = trk.hitPattern().trackerLayersWithMeasurement();
-  //       chi2n = chi2n/nlayers;
-  //       double algoOffline = trk.algo();
+        double dzvtx = trk.dz(bestvtx);
+        double dxyvtx = trk.dxy(bestvtx);
+        double dzerror = sqrt(trk.dzError()*trk.dzError()+bestvzError*bestvzError);
+        double dxyerror = sqrt(trk.d0Error()*trk.d0Error()+bestvxError*bestvyError); 
+        double nhits = trk.numberOfValidHits();
+        double chi2n = trk.normalizedChi2();
+        double nlayers = trk.hitPattern().trackerLayersWithMeasurement();
+        chi2n = chi2n/nlayers;
+        double algoOffline = trk.algo();
 
-  //       if(!trk.quality(reco::TrackBase::highPurity)) continue;
-  //       if(fabs( trk.eta() ) > 1) continue;
-  //       if(!(algoOffline==4 || algoOffline==6 || algoOffline==7 || algoOffline==5)) continue;
-  //       if(fabs(trk.ptError())/trk.pt() > offlineptErr_ ) continue;
-  //       if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
-  //       if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
-  //       if(chi2n > offlineChi2_) continue;
-  //       if(nhits < offlinenhits_) continue;
+        if(!trk.quality(reco::TrackBase::highPurity)) continue;
 
-  //       total++;
+        DCAz->Fill( fabs(dzvtx/dzerror) );
+        DCAxy->Fill( fabs(dxyvtx/dxyerror) );
+        ptError->Fill( fabs(trk.ptError())/trk.pt() );
+        Chi2n->Fill( chi2n );
+        numberOfHits->Fill( nhits );
+        Algo->Fill( algoOffline );
 
-  //       double ecalEnergy = 0.;
-  //       double hcalEnergy = 0.;
-  //       if( doCaloMatched_ ){
-          
-  //         for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
+        if(fabs(trk.ptError())/trk.pt() > offlineptErr_ ) continue;
+        if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
+        if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
+        total++;//count multiplicity
+        if(fabs( trk.eta() ) > 1) continue;
+        if(!(algoOffline==4 || algoOffline==6 || algoOffline==7 || algoOffline==5)) continue;
+        if(chi2n > offlineChi2_) continue;
+        if(nhits < offlinenhits_) continue;
 
-  //           const reco::PFCandidate& cand = (*pfCandidates)[ic];
+        pt->Fill( trk.pt() );
+        eta->Fill( trk.eta() );
+        phi->Fill( trk.phi() );
 
-  //           int type = cand.particleId();
-            
-  //           // only charged hadrons and leptons can be asscociated with a track
-  //           if(!(type == reco::PFCandidate::h ||     //type1
-  //           type == reco::PFCandidate::e ||     //type2
-  //           type == reco::PFCandidate::mu      //type3
-  //           )) continue;
+        double ecalEnergy = 0.;
+        double hcalEnergy = 0.;
+        for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
 
-  //           reco::TrackRef trackRef = cand.trackRef();
-  //           if( it == trackRef.key() ) {
-  //             // cand_index = ic;
-  //             ecalEnergy = cand.ecalEnergy();
-  //             hcalEnergy = cand.hcalEnergy();              
-  //             break;
-  //           } 
-  //         }
+          const reco::PFCandidate& cand = (*pfCandidates)[ic];
 
-  //         //if((trk.pt()-reso_*trk.ptError())*TMath::CosH( trk.eta() )>15 && (trk.pt()-reso_*trk.ptError())*TMath::CosH( trk.eta() ) > hcalEnergy+ecalEnergy ) continue; //Calo Matching
-  //           if( (trk.pt() < 20) || ((hcalEnergy+ecalEnergy)/( trk.pt()*TMath::CosH(trk.eta() ) ) > reso_ && (hcalEnergy+ecalEnergy)/(TMath::CosH(trk.eta())) > (trk.pt() - 80.0)) ) {// simple Calo matching
-  //           matched++;
-  //           if( trk.pt() > maxPt ) maxPt = trk.pt();//looking for leading pT track
-  //           }
-  //       }
-  //       else{
-  //           if( trk.pt() > maxPt ) maxPt = trk.pt();//looking for leading pT track
-  //       }
-  // } 
+          int type = cand.particleId();
+
+          // only charged hadrons and leptons can be asscociated with a track
+          if(!(type == reco::PFCandidate::h ||     //type1
+          type == reco::PFCandidate::e ||     //type2
+          type == reco::PFCandidate::mu      //type3
+          )) continue;
+
+          reco::TrackRef trackRef = cand.trackRef();
+          if( it == trackRef.key() ) {
+            // cand_index = ic;
+            ecalEnergy = cand.ecalEnergy();
+            hcalEnergy = cand.hcalEnergy();
+            break;
+          }
+        }
+
+        double energy = ecalEnergy+hcalEnergy;
+        double pT = energy/(TMath::CosH(trk.eta()));
+        double ratio = pT/trk.pt();
+        
+        if( !doCentrality_ ) hiBin_ = 1.0;
+        caloVsCbin->Fill(hiBin_, ratio);
+
+  }
+      
+  Ntrk->Fill( total );
 
 
-}
 
-
+}// last braket 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 validation::beginJob()
@@ -366,11 +405,24 @@ validation::beginJob()
     
   TH3D::SetDefaultSumw2();
 
+  cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
+  caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
+
   nVtx = fs->make<TH1D>("nVtx",";nVtx",15,0,15);
   vtxTracksSize = fs->make<TH1D>("vtxTracksSize",";vtxTracksSize",10000,0,10000);
   vtxZ = fs->make<TH1D>("vtxZ",";vtxZ",400,-20,20);
   vtxX = fs->make<TH1D>("vtxX",";vtxX",400,-2,2);
   vtxY = fs->make<TH1D>("vtxY",";vtxY",400,-2,2);
+
+  pt = fs->make<TH1D>("pt",";pt",10000,0,1000);
+  ptError = fs->make<TH1D>("ptError",";ptError",1000,0,1);
+  eta = fs->make<TH1D>("eta",";eta",1000,-3.0,3.0);
+  phi = fs->make<TH1D>("eta",";eta",1000,-4.0,4.0);
+  DCAz = fs->make<TH1D>("DCAz",";DCAz",1000,0,100);
+  DCAxy = fs->make<TH1D>("DCAxy",";DCAxy",1000,0,100);
+  numberOfHits = fs->make<TH1D>("numberOfHits",";numberOfHits",30,0,30);
+  Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
+  Chi2n->fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
 }
 
