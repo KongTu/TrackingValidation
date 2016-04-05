@@ -277,7 +277,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   nVtx->Fill( num );
 
-  if( vtx.tracksSize < 2 || vtx.isFake() ) return;
+  if( vtx.tracksSize() < 2 || vtx.isFake() ) return;
   vtxZ->Fill( vtx.z() );
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
@@ -368,9 +368,9 @@ validation::beginJob()
 
   nVtx = fs->make<TH1D>("nVtx",";nVtx",15,0,15);
   vtxTracksSize = fs->make<TH1D>("vtxTracksSize",";vtxTracksSize",10000,0,10000);
-  vtxZ = = fs->make<TH1D>("vtxZ",";vtxZ",400,-20,20);
-  vtxX = = fs->make<TH1D>("vtxX",";vtxX",400,-2,2);
-  vtxY = = fs->make<TH1D>("vtxY",";vtxY",400,-2,2);
+  vtxZ = fs->make<TH1D>("vtxZ",";vtxZ",400,-20,20);
+  vtxX = fs->make<TH1D>("vtxX",";vtxX",400,-2,2);
+  vtxY = fs->make<TH1D>("vtxY",";vtxY",400,-2,2);
 
 }
 
