@@ -240,9 +240,9 @@ validation::validation(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
-  trackSrc_ = consumes<reco::VertexCollection>(edm::InputTag("trackSrc"));
+  trackSrc_ = consumes<reco::TrackCollection>(edm::InputTag("trackSrc"));
   vertexSrc_ = consumes<reco::VertexCollection>(edm::InputTag("vertexSrc"));
-  pfCandSrc_ = consumes<reco::VertexCollection>(edm::InputTag("pfCandSrc"));
+  pfCandSrc_ = consumes<reco::PFCandidateCollection>(edm::InputTag("pfCandSrc"));
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
