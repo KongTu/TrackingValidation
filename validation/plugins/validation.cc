@@ -185,11 +185,6 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       virtual void endJob() override;
 
       // ----------member data ---------------------------
-      
-  edm::InputTag trackSrc_;//track collection: hiGeneralAndRegitTracks
-  std::string vertexSrc_; // vertex collection: hiSelectedVertex
-  edm::InputTag pfCandSrc_; // pfCandidate collection
-
   edm::EDGetTokenT<reco::Centrality> centralityToken_;
   edm::EDGetTokenT<int> centralityBinToken_;
 
