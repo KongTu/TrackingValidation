@@ -383,8 +383,8 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         eta->Fill( trk.eta() );
         phi->Fill( trk.phi() );
 
-        double ecalEnergy = 0.;
-        double hcalEnergy = 0.;
+        // double ecalEnergy = 0.;
+        // double hcalEnergy = 0.;
         // for( unsigned ic = 0; ic < pfCandidates->size(); ic++ ) {//calo matching loops
 
         //   const reco::PFCandidate& cand = (*pfCandidates)[ic];
