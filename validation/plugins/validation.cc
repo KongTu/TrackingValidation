@@ -198,6 +198,8 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double offlineChi2_;
   double offlinenhits_;
 
+  bool doCentrality_;
+
   TH1D* nVtx;
   TH1D* vtxTracksSize;
   TH1D* vtxZ;
@@ -246,6 +248,8 @@ validation::validation(const edm::ParameterSet& iConfig)
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
   offlineChi2_ = iConfig.getUntrackedParameter<double>("offlineChi2", 0.0);
   offlinenhits_ = iConfig.getUntrackedParameter<double>("offlinenhits", 0.0);
+
+  doCentrality_ = iConfig.getUntrackedParameter<bool>("doCentrality");
 
   centralityToken_ = consumes<reco::Centrality>(iConfig.getParameter<edm::InputTag>("centralitySrc"));
   centralityBinToken_ = consumes<int>(iConfig.getParameter<edm::InputTag>("centralityBinSrc"));
@@ -322,6 +326,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(pfCandSrc_, pfCandidates);
   if( !pfCandidates.isValid() ) return;
 
+  int total = 0;
   for(unsigned it = 0; it < tracks->size(); it++){
 
      const reco::Track & trk = (*tracks)[it];
@@ -422,7 +427,7 @@ validation::beginJob()
   DCAxy = fs->make<TH1D>("DCAxy",";DCAxy",1000,0,100);
   numberOfHits = fs->make<TH1D>("numberOfHits",";numberOfHits",30,0,30);
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
-  Chi2n->fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
+  Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
 }
 
