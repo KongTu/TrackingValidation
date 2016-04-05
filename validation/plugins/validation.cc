@@ -193,6 +193,11 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::Centrality> centralityToken_;
   edm::EDGetTokenT<int> centralityBinToken_;
 
+  edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
+  edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
+  edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
+
+
   double offlineptErr_;
   double offlineDCA_;
   double offlineChi2_;
@@ -240,9 +245,9 @@ validation::validation(const edm::ParameterSet& iConfig)
 
 {
    //now do what ever initialization is needed
-  trackSrc_ = iConfig.getParameter<edm::InputTag>("trackSrc");
-  vertexSrc_ = iConfig.getParameter<std::string>("vertexSrc");
-  pfCandSrc_ = iConfig.getUntrackedParameter<edm::InputTag>("pfCandSrc");
+  trackSrc_ = consumes<reco::VertexCollection>(edm::InputTag("trackSrc"));
+  vertexSrc_ = consumes<reco::VertexCollection>(edm::InputTag("vertexSrc"));
+  pfCandSrc_ = consumes<reco::VertexCollection>(edm::InputTag("pfCandSrc"));
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
@@ -289,7 +294,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   edm::Handle<reco::VertexCollection> vertices;
-  iEvent.getByLabel(vertexSrc_,vertices);
+  iEvent.getByToken(vertexSrc_,vertices);
   double bestvz=-999.9, bestvx=-999.9, bestvy=-999.9;
   double bestvzError=-999.9, bestvxError=-999.9, bestvyError=-999.9;
   const reco::Vertex & vtx = (*vertices)[0];
@@ -319,11 +324,11 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxY->Fill( vtx.y() );
 
   Handle<reco::TrackCollection> tracks;
-  iEvent.getByLabel(trackSrc_, tracks);
+  iEvent.getByToken(trackSrc_, tracks);
   if( !tracks.isValid() ) return;
 
   Handle<reco::PFCandidateCollection> pfCandidates;
-  iEvent.getByLabel(pfCandSrc_, pfCandidates);
+  iEvent.getByToken(pfCandSrc_, pfCandidates);
   if( !pfCandidates.isValid() ) return;
 
   int total = 0;
