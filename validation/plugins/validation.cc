@@ -319,13 +319,19 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     vtxTracksSize->Fill( vtx1.tracksSize() );
     if( vtx1.tracksSize() < 2 ) continue;
     num++;
+
+    
   }
   nVtx->Fill( num );
+      cout << "test1 " << endl;
 
   if( vtx.tracksSize() < 2 || vtx.isFake() ) return;
   vtxZ->Fill( vtx.z() );
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
+
+      cout << "test2 " << endl;
+
 
   Handle<reco::TrackCollection> tracks;
   iEvent.getByToken(trackSrc_, tracks);
@@ -334,6 +340,9 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<reco::PFCandidateCollection> pfCandidates;
   iEvent.getByToken(pfCandSrc_, pfCandidates);
   if( !pfCandidates.isValid() ) return;
+
+      cout << "test3 " << endl;
+
 
   int total = 0;
   for(unsigned it = 0; it < tracks->size(); it++){
@@ -405,6 +414,9 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         caloVsCbin->Fill(hiBin_, ratio);
 
   }
+
+      cout << "test4 " << endl;
+
       
   Ntrk->Fill( total );
 
