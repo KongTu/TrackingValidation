@@ -406,19 +406,19 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //   }
         // }
 
-        double energy = ecalEnergy+hcalEnergy;
-        double pT = energy/(TMath::CosH(trk.eta()));
-        double ratio = pT/trk.pt();
+        // double energy = ecalEnergy+hcalEnergy;
+        // double pT = energy/(TMath::CosH(trk.eta()));
+        // double ratio = pT/trk.pt();
         
-        if( !doCentrality_ ) hiBin_ = 1.0;
-        caloVsCbin->Fill(hiBin_, ratio);
+        // if( !doCentrality_ ) hiBin_ = 1.0;
+        // caloVsCbin->Fill(hiBin_, ratio);
 
   }
 
-      cout << "test4 " << endl;
 
       
   Ntrk->Fill( total );
+      cout << "test4 " << endl;
 
 
 
