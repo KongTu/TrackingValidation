@@ -9,14 +9,17 @@ process.ana = cms.EDAnalyzer('validation',
                 		  vertexSrc = cms.string('hiSelectedVertex'),
                 		  trackSrc = cms.InputTag('hiGeneralTracks'),             
 				  pfCandSrc = cms.untracked.InputTag('particleFlowTmp'),
+				  centralitySrc = cms.InputTag("hiCentrality"),
+          						centralityBinSrc = cms.InputTag("centralityBin","HFtowers"),
  
-				  doCaloMatched = cms.untracked.bool(True),
 				  
-				  reso = cms.untracked.double(0.5),#0.2	
 				  offlineDCA = cms.untracked.double(3.0),#3.0
 				  offlineChi2 = cms.untracked.double(0.15),#0.15
 				  offlineptErr = cms.untracked.double(0.1),#0.05
-				  offlinenhits = cms.untracked.double(11)#10
+				  offlinenhits = cms.untracked.double(11),#10
+
+				  doCentrality = cms.untracked.bool(True)
+
 					
 )
 
