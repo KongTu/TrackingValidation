@@ -247,7 +247,7 @@ validation::validation(const edm::ParameterSet& iConfig)
   
   trackName_ = iConfig.getParameter<edm::InputTag>("trackName");
   vertexName_ = iConfig.getParameter<edm::InputTag>("vertexName");
-  pfCandName_ = iConfig.getParameter<edm::InputTag>("pfCandName");
+  pfCandName_ = iConfig.getUntrackedParameter<edm::InputTag>("pfCandName");
 
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
