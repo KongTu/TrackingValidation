@@ -422,7 +422,7 @@ validation::beginJob()
   pt = fs->make<TH1D>("pt",";pt",10000,0,1000);
   ptError = fs->make<TH1D>("ptError",";ptError",1000,0,1);
   eta = fs->make<TH1D>("eta",";eta",1000,-3.0,3.0);
-  phi = fs->make<TH1D>("eta",";eta",1000,-4.0,4.0);
+  phi = fs->make<TH1D>("phi",";phi",1000,-4.0,4.0);
   DCAz = fs->make<TH1D>("DCAz",";DCAz",1000,0,100);
   DCAxy = fs->make<TH1D>("DCAxy",";DCAxy",1000,0,100);
   numberOfHits = fs->make<TH1D>("numberOfHits",";numberOfHits",30,0,30);
