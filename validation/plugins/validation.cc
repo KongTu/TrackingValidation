@@ -224,6 +224,8 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1D* cBins;
   TH2D* caloVsCbin;
 
+  TH3D* pTvsEtaCent;
+
 
 };
 
@@ -372,6 +374,8 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(chi2n > offlineChi2_) continue;
         if(nhits < offlinenhits_) continue;
 
+        pTvsEtaCent->Fill(trk.eta(), trk.pt(), hiBin_);
+
         pt->Fill( trk.pt() );
         eta->Fill( trk.eta() );
         phi->Fill( trk.phi() );
@@ -440,6 +444,8 @@ validation::beginJob()
   numberOfHits = fs->make<TH1D>("numberOfHits",";numberOfHits",30,0,30);
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
+
+  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 48, -2.4,2.4, 1000,0,100,200,0,200);
 
 }
 
