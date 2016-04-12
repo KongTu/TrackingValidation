@@ -337,7 +337,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
 
-  Handle<reco::CaloTowerCollection> towers;
+  Handle<CaloTowerCollection> towers;
   iEvent.getByToken(towerSrc_, towers);
 
   double energy = 0.;
