@@ -136,6 +136,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/CaloTowers/interface/CaloTower.h"  
+#include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"  
 #include "DataFormats/CaloTowers/interface/CaloTowerDetId.h"   
 
 // Particle Flow
@@ -257,6 +258,7 @@ validation::validation(const edm::ParameterSet& iConfig)
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
   pfCandSrc_ = consumes<reco::PFCandidateCollection>(pfCandName_);
+  
   towerSrc_ = iConfig.getParameter<edm::InputTag>("towerSrc");
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
@@ -335,7 +337,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
 
-  Handle<reco::CaloTowerCollection> towers;
+  Handle<CaloTowerCollection> towers;
   iEvent.getByLabel(towerSrc_, towers);
 
   double energy = 0.;
