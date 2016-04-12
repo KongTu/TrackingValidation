@@ -150,6 +150,14 @@
 #include "DataFormats/ParticleFlowReco/interface/PFCluster.h"
 #include "DataFormats/ParticleFlowReco/interface/PFClusterFwd.h"
 
+
+//#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+   #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+   #include "HLTrigger/special/interface/HLTHcalNoiseFilter.h"
+   #include "DataFormats/Common/interface/Handle.h"
+   #include "FWCore/MessageLogger/interface/MessageLogger.h"
+   #include "DataFormats/Math/interface/deltaR.h"
+
 // Vertex significance
 #include "RecoBTag/SecondaryVertex/interface/SecondaryVertex.h"
 
