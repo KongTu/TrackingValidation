@@ -369,7 +369,6 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
         if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
         total++;//count multiplicity
-        if(fabs( trk.eta() ) > 1) continue;
         if(!(algoOffline==4 || algoOffline==6 || algoOffline==7 || algoOffline==5)) continue;
         if(chi2n > offlineChi2_) continue;
         if(nhits < offlinenhits_) continue;
