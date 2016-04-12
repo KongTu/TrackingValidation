@@ -193,7 +193,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
   edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
-  edm::EDGetTokenT<reco::CaloTowerCollection> pfCandSrc_;
+  edm::EDGetTokenT<reco::CaloTowerCollection> towerSrc_;
   
   edm::InputTag vertexName_;
   edm::InputTag trackName_;
