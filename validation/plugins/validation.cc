@@ -369,7 +369,6 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(fabs(dzvtx/dzerror) > offlineDCA_) continue;
         if(fabs(dxyvtx/dxyerror) > offlineDCA_) continue;
         total++;//count multiplicity
-        if(fabs( trk.eta() ) > 1) continue;
         if(!(algoOffline==4 || algoOffline==6 || algoOffline==7 || algoOffline==5)) continue;
         if(chi2n > offlineChi2_) continue;
         if(nhits < offlinenhits_) continue;
@@ -445,7 +444,7 @@ validation::beginJob()
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
-  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 48, -2.4,2.4, 1000,0,100,200,0,200);
+  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,200,0,200);c
 
 }
 
