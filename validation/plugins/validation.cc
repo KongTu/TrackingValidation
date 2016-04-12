@@ -191,11 +191,12 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
   edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
+  edm::EDGetTokenT<reco::CaloTowerCollection> towerSrc_;
 
   edm::InputTag vertexName_;
   edm::InputTag trackName_;
   edm::InputTag pfCandName_;
-
+  edm::InputTag towerName_;
 
   double offlineptErr_;
   double offlineDCA_;
@@ -221,6 +222,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1D* Algo;
 
   TH1D* Ntrk;
+  TH1D* HFsum;
   TH1D* cBins;
   TH2D* caloVsCbin;
 
@@ -250,6 +252,7 @@ validation::validation(const edm::ParameterSet& iConfig)
   trackName_ = iConfig.getParameter<edm::InputTag>("trackName");
   vertexName_ = iConfig.getParameter<edm::InputTag>("vertexName");
   pfCandName_ = iConfig.getUntrackedParameter<edm::InputTag>("pfCandName");
+  towerName_ = iConfig.getParameter<edm::InputTag>("towerName");
 
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
@@ -331,6 +334,18 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxX->Fill( vtx.x() );
   vtxY->Fill( vtx.y() );
 
+  Handle<CaloTowerCollection> towers;
+  iEvent.getByToken(towerSrc_, towers);
+
+  double energy = 0.;
+  for(unsigned i = 0; i < towers->size(); ++i){
+
+        const CaloTower & hit= (*towers)[i];
+        energy += hit.hadEnergy() + hit.emEnergy();
+  }
+  
+  HFsum->Fill( energy );
+
   Handle<reco::TrackCollection> tracks;
   iEvent.getByToken(trackSrc_, tracks);
   if( !tracks.isValid() ) return;
@@ -373,7 +388,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(chi2n > offlineChi2_) continue;
         if(nhits < offlinenhits_) continue;
 
-        pTvsEtaCent->Fill(trk.eta(), trk.pt(), hiBin_);
+        pTvsEtaCent->Fill(trk.eta(), trk.pt(), energy);
 
         pt->Fill( trk.pt() );
         eta->Fill( trk.eta() );
@@ -425,6 +440,7 @@ validation::beginJob()
   TH3D::SetDefaultSumw2();
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
+  HFsum = fs->make<TH1D>("HFsum", ";HFsum", 10000, 0, 10000);
   cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
   caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
 
@@ -444,7 +460,7 @@ validation::beginJob()
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
-  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,200,0,200);
+  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,10000,0,10000);
 
 }
 
