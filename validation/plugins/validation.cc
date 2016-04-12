@@ -193,12 +193,13 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
   edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
-  edm::EDGetTokenT<reco::CaloTowerCollection> towerSrc_;
-  
+  //edm::EDGetTokenT<reco::CaloTowerCollection> towerSrc_;
+  edm::InputTag towerSrc_;
+
   edm::InputTag vertexName_;
   edm::InputTag trackName_;
   edm::InputTag pfCandName_;
-  edm::InputTag towerName_;
+  //edm::InputTag towerName_;
 
   double offlineptErr_;
   double offlineDCA_;
@@ -254,12 +255,13 @@ validation::validation(const edm::ParameterSet& iConfig)
   trackName_  =  iConfig.getParameter<edm::InputTag>("trackName");
   vertexName_ =  iConfig.getParameter<edm::InputTag>("vertexName");
   pfCandName_ =  iConfig.getUntrackedParameter<edm::InputTag>("pfCandName");
-  towerName_ =  iConfig.getParameter<edm::InputTag>("towerName");
+  //towerName_ =  iConfig.getParameter<edm::InputTag>("towerName");
 
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
   pfCandSrc_ = consumes<reco::PFCandidateCollection>(pfCandName_);
-  towerSrc_ = consumes<reco::CaloTowerCollection>(towerName_);
+  //towerSrc_ = consumes<reco::CaloTowerCollection>(towerName_);
+  towerSrc_ = iConfig.getParameter<edm::InputTag>("towerSrc");
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
@@ -338,7 +340,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vtxY->Fill( vtx.y() );
 
   Handle<CaloTowerCollection> towers;
-  iEvent.getByToken(towerSrc_, towers);
+  iEvent.getByLabel(towerSrc_, towers);
 
   double energy = 0.;
   for(unsigned i = 0; i < towers->size(); ++i){
