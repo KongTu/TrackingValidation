@@ -465,7 +465,7 @@ validation::beginJob()
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
-  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,10000,0,10000);
+  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,600,0,6000);
 
 }
 
