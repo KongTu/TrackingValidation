@@ -344,6 +344,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   for(unsigned i = 0; i < towers->size(); ++i){
 
         const CaloTower & hit= (*towers)[i];
+        if( fabs(hit.eta()) > 5.0 || fabs(hit.eta()) < 3.0  ) continue;
         energy += hit.hadEnergy() + hit.emEnergy();
   }
   
