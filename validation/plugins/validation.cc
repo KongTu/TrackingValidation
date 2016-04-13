@@ -445,7 +445,7 @@ validation::beginJob()
   TH3D::SetDefaultSumw2();
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
-  HFsum = fs->make<TH1D>("HFsum", ";HFsum", 10000, 0, 10000);
+  HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
   cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
   caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
 
@@ -465,7 +465,7 @@ validation::beginJob()
   Algo = fs->make<TH1D>("Algo",";Algo",20,0,20);
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
-  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,600,0,6000);
+  pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,1000,0,10000);
 
 }
 
