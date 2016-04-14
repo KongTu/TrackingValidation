@@ -225,6 +225,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   TH1D* Ntrk;
   TH1D* HFsum;
+  TH1D* CaloEta;
   TH1D* cBins;
   TH2D* caloVsCbin;
 
@@ -345,6 +346,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         const CaloTower & hit= (*towers)[i];
         if( fabs(hit.eta()) > 5.0 || fabs(hit.eta()) < 3.0  ) continue;
+        CaloEta->Fill( hit.eta() );
         energy += hit.hadEnergy() + hit.emEnergy();
   }
   
@@ -445,6 +447,7 @@ validation::beginJob()
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
+  CaloEta = fs->make<TH1D>("CaloEta",";#eta", 1000,-5,5);
   cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
   caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
 
