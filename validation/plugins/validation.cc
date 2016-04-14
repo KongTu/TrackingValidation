@@ -225,11 +225,13 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   TH1D* Ntrk;
   TH1D* HFsum;
+  TH1D* HFsumEt;
   TH1D* CaloEta;
   TH1D* cBins;
   TH2D* caloVsCbin;
 
   TH3D* pTvsEtaCent;
+  TH3D* pTvsEtaSumET
 
 
 };
@@ -342,15 +344,18 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(towerSrc_, towers);
 
   double energy = 0.;
+  double sumEt = 0.;
   for(unsigned i = 0; i < towers->size(); ++i){
 
         const CaloTower & hit= (*towers)[i];
         if( fabs(hit.eta()) > 5.0 || fabs(hit.eta()) < 3.0  ) continue;
         CaloEta->Fill( hit.eta() );
-        energy += hit.hadEnergy() + hit.emEnergy();
+        energy += (hit.hadEnergy() + hit.emEnergy());
+        sumEt += (hit.hadEt()+hit.emEt());
   }
   
   HFsum->Fill( energy );
+  HFsumEt->Fill( sumEt );
 
   Handle<reco::TrackCollection> tracks;
   iEvent.getByToken(trackSrc_, tracks);
@@ -395,6 +400,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(nhits < offlinenhits_) continue;
 
         pTvsEtaCent->Fill(trk.eta(), trk.pt(), energy);
+        pTvsEtaSumET->Fill(trk.eta(), trk.pt(), sumEt);
 
         pt->Fill( trk.pt() );
         eta->Fill( trk.eta() );
@@ -447,6 +453,7 @@ validation::beginJob()
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
+  HFsumEt = fs->make<TH1D>("HFsumEt", ";HFsumEt", 1000, 0, 10000); 
   CaloEta = fs->make<TH1D>("CaloEta",";#eta", 1000,-5,5);
   cBins = fs->make<TH1D>("cBins",";cbins", 200, 0, 200);
   caloVsCbin = fs->make<TH2D>("caloVsCbin",";cbins;Et/pT",200,0,200,100,0,10);
@@ -468,6 +475,7 @@ validation::beginJob()
   Chi2n = fs->make<TH1D>("Chi2n",";Chi2n",1000,0,1);
 
   pTvsEtaCent = fs->make<TH3D>("pTvsEtaCent",";#eta;p_{T}(GeV);centrality", 6, -2.4,2.4, 1000,0,100,1000,0,10000);
+  pTvsEtaSumET = fs->make<TH3D>("pTvsEtaSumET",";#eta;p_{T}(GeV);sumET", 6, -2.4,2.4, 1000,0,100,1000,0,10000);
 
 }
 
