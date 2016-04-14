@@ -231,7 +231,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH2D* caloVsCbin;
 
   TH3D* pTvsEtaCent;
-  TH3D* pTvsEtaSumET
+  TH3D* pTvsEtaSumET;
 
 
 };
