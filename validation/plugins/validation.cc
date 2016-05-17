@@ -211,6 +211,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   bool doGenParticle_;
 
   TH1D* genEta;
+  TH1D* genY;
 
   TH1D* nVtx;
   TH1D* vtxTracksSize;
@@ -333,11 +334,13 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int status = genCand.status();
       double geneta = genCand.eta();
       int gencharge = genCand.charge();
+      double genrapidity = genGand.rapidity();
 
       if( status != 1 || gencharge == 0 ) continue;
       //if( fabs(geneta) > 2.4 ) continue;
 
       genEta->Fill( geneta );
+      genY->Fill( genrapidity );
 
     }
   }
@@ -505,6 +508,7 @@ validation::beginJob()
   TH3D::SetDefaultSumw2();
 
   genEta = fs->make<TH1D>("genEta", ";#eta", 2000,-10,10);
+  genY = fs->make<TH1D>("genY", ";y", 2000,-10,10);
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
