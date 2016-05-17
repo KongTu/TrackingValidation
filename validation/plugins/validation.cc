@@ -336,7 +336,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int gencharge = genCand.charge();
       double genrapidity = genCand.rapidity();
 
-      //if( status != 1 || gencharge == 0 ) continue;
+      if( status != 1 || gencharge == 0 ) continue;
       //if( fabs(geneta) > 2.4 ) continue;
 
       genEta->Fill( geneta );
