@@ -335,7 +335,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int gencharge = genCand.charge();
 
       if( status != 1 || gencharge == 0 ) continue;
-      if( fabs(geneta) > 2.4 ) continue;
+      //if( fabs(geneta) > 2.4 ) continue;
 
       genEta->Fill( geneta );
 
@@ -504,7 +504,7 @@ validation::beginJob()
     
   TH3D::SetDefaultSumw2();
 
-  genEta = fs->make<TH1D>("genEta", ";#eta", 600,-3.0,3.0);
+  genEta = fs->make<TH1D>("genEta", ";#eta", 2000,-10,10);
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
