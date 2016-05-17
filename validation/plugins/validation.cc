@@ -195,6 +195,7 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
   edm::EDGetTokenT<CaloTowerCollection> towerSrc_;
   edm::EDGetTokenT<reco::GenParticleCollection> genSrc_;
+  edm::EDGetTokenT<reco::BeamSpot> beamSpotSrc_;
 
   edm::InputTag vertexName_;
   edm::InputTag trackName_;
@@ -216,6 +217,14 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1D* vtxZ;
   TH1D* vtxX;
   TH1D* vtxY;
+
+  TH1D* beamX;
+  TH1D* beamY;
+  TH1D* beamZ;
+
+  TH1D* beamXerror;
+  TH1D* beamYerror;
+  TH1D* beamZerror;
 
   TH1D* pt;
   TH1D* ptError;
@@ -254,7 +263,8 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 // constructors and destructor
 //
 validation::validation(const edm::ParameterSet& iConfig):
-genSrc_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genSrc")))
+genSrc_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genSrc"))),
+beamSpotSrc_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpotSrc")))
 {
    //now do what ever initialization is needed
   
@@ -331,6 +341,25 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     }
   }
+
+  edm::Handle<reco::BeamSpot> theBeamSpotHandle;
+  iEvent.getByToken(beamSpotSrc_, theBeamSpotHandle);
+  const reco::BeamSpot* theBeamSpot = theBeamSpotHandle.product();
+
+  double bx = theBeamSpot->x0();
+  double by = theBeamSpot->y0();
+  double bz = theBeamSpot->z0();
+  double bxError = theBeamSpot->x0Error();
+  double byError = theBeamSpot->y0Error();
+  double bzError = theBeamSpot->z0Error();
+
+  beamX->Fill( bx );
+  beamY->Fill( by );
+  beamZ->Fill( bz );
+  beamXerror->Fill( bxError );
+  beamYerror->Fill( byError );
+  beamZerror->Fill( bzError );
+
 
   edm::Handle<reco::VertexCollection> vertices;
   iEvent.getByToken(vertexSrc_,vertices);
@@ -489,6 +518,14 @@ validation::beginJob()
   vtxZ = fs->make<TH1D>("vtxZ",";vtxZ",400,-20,20);
   vtxX = fs->make<TH1D>("vtxX",";vtxX",400,-2,2);
   vtxY = fs->make<TH1D>("vtxY",";vtxY",400,-2,2);
+
+  beamX = fs->make<TH1D>("beamX", ";x0", 400,-20,20);
+  beamY = fs->make<TH1D>("beamY", ";y0", 400,-20,20);
+  beamZ = fs->make<TH1D>("beamZ", ";z0", 400,-20,20);
+
+  beamXerror = fs->make<TH1D>("beamXerror", ";x0Error", 1000,0,1);
+  beamYerror = fs->make<TH1D>("beamYerror", ";y0Error", 1000,0,1);
+  beamZerror = fs->make<TH1D>("beamZerror", ";z0Error", 1000,0,1);
 
   pt = fs->make<TH1D>("pt",";pt",10000,0,1000);
   ptError = fs->make<TH1D>("ptError",";ptError",1000,0,1);
