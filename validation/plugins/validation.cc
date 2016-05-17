@@ -200,7 +200,6 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::InputTag trackName_;
   edm::InputTag pfCandName_;
   edm::InputTag towerName_;
-  //edm::InputTag genName_;
 
   double offlineptErr_;
   double offlineDCA_;
@@ -263,13 +262,11 @@ genSrc_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag
   vertexName_ =  iConfig.getParameter<edm::InputTag>("vertexName");
   pfCandName_ =  iConfig.getUntrackedParameter<edm::InputTag>("pfCandName");
   towerName_ =  iConfig.getParameter<edm::InputTag>("towerName");
-  //genName_ = iConfig.getParameter<edm:InputTag>("genName");
 
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
   pfCandSrc_ = consumes<reco::PFCandidateCollection>(pfCandName_);
   towerSrc_ = consumes<CaloTowerCollection>(towerName_);
-  //genSrc_ = consumes<reco::GenParticleCollection>(genName_);
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
