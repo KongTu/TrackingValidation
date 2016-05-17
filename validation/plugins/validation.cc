@@ -324,9 +324,7 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       const reco::GenParticle & genCand = (*genParticleCollection)[it];
       int status = genCand.status();
-      double genpt = genCand.pt();
       double geneta = genCand.eta();
-      double genphi = genCand.phi();
       int gencharge = genCand.charge();
 
       if( status != 1 || gencharge == 0 ) continue;
