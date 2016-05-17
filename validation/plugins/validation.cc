@@ -194,11 +194,13 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<reco::TrackCollection> trackSrc_;
   edm::EDGetTokenT<reco::PFCandidateCollection> pfCandSrc_;
   edm::EDGetTokenT<CaloTowerCollection> towerSrc_;
+  edm::EDGetTokenT<reco::GenParticleCollection> genSrc_;
 
   edm::InputTag vertexName_;
   edm::InputTag trackName_;
   edm::InputTag pfCandName_;
   edm::InputTag towerName_;
+  edm::InputTag genName_;
 
   double offlineptErr_;
   double offlineDCA_;
@@ -206,6 +208,9 @@ class validation : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double offlinenhits_;
 
   bool doCentrality_;
+  bool doGenParticle_;
+
+  TH1D* genEta;
 
   TH1D* nVtx;
   TH1D* vtxTracksSize;
@@ -258,11 +263,13 @@ validation::validation(const edm::ParameterSet& iConfig)
   vertexName_ =  iConfig.getParameter<edm::InputTag>("vertexName");
   pfCandName_ =  iConfig.getUntrackedParameter<edm::InputTag>("pfCandName");
   towerName_ =  iConfig.getParameter<edm::InputTag>("towerName");
+  genName_ = iConfig.getParameter<edm:InputTag>("genName");
 
   trackSrc_ = consumes<reco::TrackCollection>(trackName_);
   vertexSrc_ = consumes<reco::VertexCollection>(vertexName_);
   pfCandSrc_ = consumes<reco::PFCandidateCollection>(pfCandName_);
   towerSrc_ = consumes<CaloTowerCollection>(towerName_);
+  genSrc_ = consumes<reco::GenParticleCollection>(genName_);
 
   offlineptErr_ = iConfig.getUntrackedParameter<double>("offlineptErr", 0.0);
   offlineDCA_ = iConfig.getUntrackedParameter<double>("offlineDCA", 0.0);
@@ -270,6 +277,7 @@ validation::validation(const edm::ParameterSet& iConfig)
   offlinenhits_ = iConfig.getUntrackedParameter<double>("offlinenhits", 0.0);
 
   doCentrality_ = iConfig.getUntrackedParameter<bool>("doCentrality");
+  doGenParticle_ = iConfig.getUntrackedParameter<bool>("doGenParticle");
 
   centralityToken_ = consumes<reco::Centrality>(iConfig.getParameter<edm::InputTag>("centralitySrc"));
   centralityBinToken_ = consumes<int>(iConfig.getParameter<edm::InputTag>("centralityBinSrc"));
@@ -306,6 +314,27 @@ validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     hiBin_ = *cbin;
     cBins->Fill( hiBin_ );
+  }
+
+  if( doGenParticle_ ){
+    edm::Handle<reco::GenParticleCollection> genParticleCollection;
+    iEvent.getByToken(genSrc_, genParticleCollection);
+    
+    for(unsigned it=0; it<genParticleCollection->size(); ++it) {
+
+      const reco::GenParticle & genCand = (*genParticleCollection)[it];
+      int status = genCand.status();
+      double genpt = genCand.pt();
+      double geneta = genCand.eta();
+      double genphi = genCand.phi();
+      int gencharge = genCand.charge();
+
+      if( status != 1 || gencharge == 0 ) continue;
+      if( fabs(geneta) > 2.4 ) continue;
+
+      genEta->Fill( geneta );
+
+    }
   }
 
   edm::Handle<reco::VertexCollection> vertices;
@@ -450,6 +479,8 @@ validation::beginJob()
   edm::Service<TFileService> fs;
     
   TH3D::SetDefaultSumw2();
+
+  genEta = fs->make<TH1D>("genEta", ";#eta", 600,-3.0,3.0);
 
   Ntrk = fs->make<TH1D>("Ntrk", ";Ntrk", 10000, 0,10000);
   HFsum = fs->make<TH1D>("HFsum", ";HFsum", 1000, 0, 10000);
